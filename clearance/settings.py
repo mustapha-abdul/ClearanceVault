@@ -69,13 +69,14 @@ WSGI_APPLICATION = 'clearance.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'clearance',
-        'USER': 'clearance_app',
-        'PASSWORD': os.environ["DB_PASSWORD"],
-        'HOST': '127.0.0.1',
-        'PORT': '3307',
+        'NAME': os.environ.get('DB_NAME', 'clearance'),
+        'USER': os.environ.get('DB_USER', 'clearance_app'),
+        'PASSWORD': os.environ['DB_PASSWORD'],
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '3307'),
         'OPTIONS': {
             'charset': 'utf8mb4',
+            'ssl_mode': os.environ.get('DB_SSL_MODE', 'PREFERRED'),
         },
     }
 }
