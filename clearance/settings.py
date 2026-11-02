@@ -7,11 +7,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY SETTINGS
-SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-local-development-key")
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.onrender.com']
+
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
 
 # APPLICATIONS
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -38,7 +41,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 
 # URL CONFIGURATION
 ROOT_URLCONF = 'clearance.urls'
@@ -71,7 +73,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DB_NAME', 'clearance'),
         'USER': os.environ.get('DB_USER', 'clearance_app'),
-        'PASSWORD': os.environ['DB_PASSWORD'],
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
         'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
         'PORT': os.environ.get('DB_PORT', '3307'),
         'OPTIONS': {
@@ -129,7 +131,7 @@ MAILERS = {
             'host': 'smtp.gmail.com',
             'port': 587,
             'username': 'abdulhakeemmustapha337@gmail.com',
-            'password': os.environ["EMAIL_HOST_PASSWORD"],
+            'password': os.environ.get("EMAIL_HOST_PASSWORD", ""),
             'use_tls': True,
             'timeout': 20,
         },
@@ -167,3 +169,12 @@ PAYSTACK_PLAN_AMOUNTS = {
 
 PAYSTACK_BASE_URL = "https://api.paystack.co"
 PAYSTACK_TIMEOUT = 30
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
