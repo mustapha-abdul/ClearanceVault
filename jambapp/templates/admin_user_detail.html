@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details | ClearanceVault</title>
+
+    <style>
+        :root {
+            --bg: #090b16;
+            --panel: #171d33;
+            --text: #f5f6ff;
+            --muted: #9ba5c0;
+            --border: rgba(255,255,255,.10);
+            --accent: #8b7cff;
+            --green: #35d49a;
+            --red: #ff7185;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .back {
+            display: inline-block;
+            color: var(--muted);
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 17px;
+            margin: 0 0 18px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+            margin-top: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .info {
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+        }
+
+        .info small {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 7px;
+        }
+
+        .info strong {
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .active {
+            color: var(--green);
+            background: rgba(53,212,154,.12);
+        }
+
+        .inactive {
+            color: var(--red);
+            background: rgba(255,113,133,.12);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+
+        select, button {
+            padding: 11px 14px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        select {
+            background: #10162a;
+            color: white;
+        }
+
+        button {
+            color: white;
+            background: var(--accent);
+            border: 0;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        button.danger {
+            background: #bd4059;
+        }
+
+        button.warning {
+            background: #a66a28;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 13px 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        th {
+            color: var(--muted);
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .message {
+            padding: 13px 15px;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--panel);
+            font-size: 13px;
+        }
+
+        .notice {
+            color: #ffd28a;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        .empty {
+            color: var(--muted);
+            padding: 20px 0;
+            font-size: 13px;
+        }
+
+        @media (max-width: 650px) {
+            body { padding: 18px; }
+            .grid { grid-template-columns: 1fr; }
+            .panel { padding: 16px; }
+            h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <a class="back" href="{% url 'admin_dashboard' %}">
+        ← Back to Admin Dashboard
+    </a>
+
+    <h1>User Details</h1>
+    <p class="muted">
+        Manage this ClearanceVault account and review its activity.
+    </p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- USER INFORMATION -->
+
+    <section class="panel">
+        <h2>Account Information</h2>
+
+        <div class="grid">
+            <div class="info">
+                <small>Full Name</small>
+                <strong>
+                    {{ account.get_full_name|default:"Not provided" }}
+                </strong>
+            </div>
+
+            <div class="info">
+                <small>Username</small>
+                <strong>{{ account.username }}</strong>
+            </div>
+
+            <div class="info">
+                <small>Email Address</small>
+                <strong>{{ account.email }}</strong>
+            </div>
+
+            <div class="info">
+                <small>User ID</small>
+                <strong>{{ account.id }}</strong>
+            </div>
+
+            <div class="info">
+                <small>Date Joined</small>
+                <strong>{{ account.date_joined|date:"M d, Y H:i" }}</strong>
+            </div>
+
+            <div class="info">
+                <small>Last Login</small>
+                <strong>
+                    {{ account.last_login|date:"M d, Y H:i"|default:"Never" }}
+                </strong>
+            </div>
+
+            <div class="info">
+                <small>Account Status</small>
+                {% if account.is_active %}
+                    <span class="status active">ACTIVE</span>
+                {% else %}
+                    <span class="status inactive">INACTIVE</span>
+                {% endif %}
+            </div>
+
+            <div class="info">
+                <small>Account Type</small>
+                <strong>
+                    {% if account.is_superuser %}
+                        Superuser
+                    {% elif account.is_staff %}
+                        Staff
+                    {% else %}
+                        Student
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- SUBSCRIPTION -->
+
+    <section class="panel">
+        <h2>Subscription Management</h2>
+
+        <div class="grid">
+            <div class="info">
+                <small>Current Plan</small>
+                <strong>{{ subscription.get_plan_display }}</strong>
+            </div>
+
+            <div class="info">
+                <small>Subscription Status</small>
+                <strong>{{ subscription.get_status_display }}</strong>
+            </div>
+
+            <div class="info">
+                <small>Current Period Start</small>
+                <strong>
+                    {{ subscription.current_period_start|date:"M d, Y"|default:"Not set" }}
+                </strong>
+            </div>
+
+            <div class="info">
+                <small>Current Period End</small>
+                <strong>
+                    {{ subscription.current_period_end|date:"M d, Y"|default:"Not set" }}
+                </strong>
+            </div>
+        </div>
+
+        {% if not account.is_staff and not account.is_superuser %}
+            <form
+                method="POST"
+                action="{% url 'admin_change_user_plan' account.id %}"
+                style="margin-top:22px;"
+            >
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <select name="plan" required>
+                        <option value="free"
+                            {% if subscription.plan == "free" %}selected{% endif %}>
+                            Free
+                        </option>
+
+                        <option value="plus"
+                            {% if subscription.plan == "plus" %}selected{% endif %}>
+                            Plus
+                        </option>
+
+                        <option value="pro"
+                            {% if subscription.plan == "pro" %}selected{% endif %}>
+                            Pro
+                        </option>
+                    </select>
+
+                    <button type="submit">
+                        Update Plan
+                    </button>
+                </div>
+
+                <p class="notice">
+                    Manual plan changes do not collect payment or update
+                    the customer's Paystack billing agreement.
+                </p>
+            </form>
+        {% endif %}
+    </section>
+
+    <!-- ACCOUNT ACTIONS -->
+
+    <section class="panel">
+        <h2>Account Actions</h2>
+
+        {% if not account.is_staff and not account.is_superuser and account.id != request.user.id %}
+
+            <div class="actions">
+
+                <form
+                    method="POST"
+                    action="{% url 'admin_toggle_user_status' account.id %}"
+                    onsubmit="return confirm('Are you sure you want to change this account status?');"
+                >
+                    {% csrf_token %}
+
+                    {% if account.is_active %}
+                        <button type="submit" class="warning">
+                            Deactivate Account
+                        </button>
+                    {% else %}
+                        <button type="submit">
+                            Activate Account
+                        </button>
+                    {% endif %}
+                </form>
+
+                <form
+                    method="POST"
+                    action="{% url 'admin_delete_user' account.id %}"
+                    onsubmit="return confirm('WARNING: This permanently deletes this user and associated database records. Continue?');"
+                >
+                    {% csrf_token %}
+
+                    <button type="submit" class="danger">
+                        Delete Account
+                    </button>
+                </form>
+
+            </div>
+
+        {% else %}
+
+            <p class="notice">
+                This is an administrator account or your own account.
+                These account actions are disabled for safety.
+            </p>
+
+        {% endif %}
+    </section>
+
+    <!-- DOCUMENTS -->
+
+    <section class="panel">
+        <h2>Uploaded Documents ({{ total_documents }})</h2>
+
+        {% if documents %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Category</th>
+                            <th>Uploaded</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for document in documents %}
+                            <tr>
+                                <td>{{ document.title }}</td>
+                                <td>{{ document.get_category_display }}</td>
+                                <td>{{ document.uploaded_at|date:"M d, Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="empty">This user has not uploaded any documents.</p>
+        {% endif %}
+    </section>
+
+    <!-- PAYMENTS -->
+
+    <section class="panel">
+        <h2>
+            Payment History
+            ({{ total_payments }})
+        </h2>
+
+        <p class="muted">
+            Successful payments: {{ successful_payments }}
+        </p>
+
+        {% if payments %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Plan</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for payment in payments %}
+                            <tr>
+                                <td>{{ payment.reference }}</td>
+                                <td>{{ payment.get_plan_display }}</td>
+                                <td>
+                                    ₦{{ payment.amount_kobo|floatformat:0 }}
+                                    <span class="muted">kobo</span>
+                                </td>
+                                <td>{{ payment.get_status_display }}</td>
+                                <td>{{ payment.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="empty">No payment records found.</p>
+        {% endif %}
+    </section>
+
+</div>
+</body>
+</html>

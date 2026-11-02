@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+staticfiles/
+.idea/
+*.log
+db.sqlite3
+student_documents/

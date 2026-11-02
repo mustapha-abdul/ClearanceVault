@@ -1,0 +1,1065 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | ClearanceVault</title>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg: #090b16;
+            --panel: rgba(22, 27, 48, .78);
+            --panel-strong: #171d33;
+            --text: #f5f6ff;
+            --muted: #9ba5c0;
+            --border: rgba(255,255,255,.09);
+            --accent: #8b7cff;
+            --accent2: #42c8f5;
+            --green: #35d49a;
+            --red: #ff7185;
+            --shadow: 0 18px 55px rgba(0,0,0,.22);
+        }
+
+        body.light {
+            --bg: #f2f4fb;
+            --panel: rgba(255,255,255,.78);
+            --panel-strong: #fff;
+            --text: #171b2e;
+            --muted: #68718b;
+            --border: rgba(28,37,68,.10);
+            --accent: #6655e8;
+            --accent2: #159acb;
+            --shadow: 0 18px 55px rgba(40,50,90,.09);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 10% 0%, rgba(116,91,255,.19), transparent 35%),
+                radial-gradient(ellipse at 90% 10%, rgba(43,190,235,.12), transparent 32%),
+                var(--bg);
+            color: var(--text);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            transition: background .25s, color .25s;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            padding: 28px 18px;
+            border-right: 1px solid var(--border);
+            background: var(--panel);
+            backdrop-filter: blur(22px);
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 5;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            margin: 0 8px 42px;
+        }
+
+        .brand-icon {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            color: white;
+            background: linear-gradient(135deg, #8876ff, #39c5ed);
+        }
+
+        .nav-label {
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 1.7px;
+            font-weight: 800;
+            margin: 25px 12px 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 12px 13px;
+            border-radius: 12px;
+            margin: 5px 0;
+            color: var(--muted);
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text);
+            background: rgba(132,112,255,.15);
+        }
+
+        .nav-link.active {
+            box-shadow: inset 3px 0 var(--accent);
+        }
+
+        /* MAIN CONTENT */
+
+        .main {
+            width: calc(100% - 250px);
+            margin-left: 250px;
+            padding: 32px;
+            max-width: 1700px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .eyebrow {
+            color: var(--accent2);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 8px 0 5px;
+            font-size: clamp(25px, 4vw, 34px);
+            letter-spacing: -1.3px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-button {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: var(--panel);
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .admin-chip {
+            padding: 10px 13px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            color: var(--muted);
+            font-size: 12px;
+            background: var(--panel);
+        }
+
+        /* SECTION HEADINGS */
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0 16px;
+            gap: 12px;
+        }
+
+        .section-heading h2 {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .section-heading span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* STATISTICS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card,
+        .panel {
+            border: 1px solid var(--border);
+            border-radius: 19px;
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card {
+            padding: 20px;
+            min-height: 145px;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(139,124,255,.15);
+            color: var(--accent);
+        }
+
+        .stat-number {
+            font-size: 29px;
+            font-weight: 800;
+            margin-top: 18px;
+            letter-spacing: -1px;
+        }
+
+        .stat-note {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* PANELS */
+
+        .panel {
+            padding: 21px;
+            margin-top: 18px;
+        }
+
+        /* DJANGO MESSAGES */
+
+        .messages-container {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message.success {
+            border-left: 4px solid var(--green);
+        }
+
+        .message.error {
+            border-left: 4px solid var(--red);
+        }
+
+        .message.warning {
+            border-left: 4px solid #e9ad48;
+        }
+
+        .message.info {
+            border-left: 4px solid var(--accent2);
+        }
+
+        /* USER TOOLBAR */
+
+        .user-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            max-width: 440px;
+        }
+
+        .search-form input {
+            min-width: 0;
+            flex: 1;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            outline: none;
+            color: var(--text);
+            background: var(--panel-strong);
+        }
+
+        .search-form input::placeholder {
+            color: var(--muted);
+        }
+
+        .search-form input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-form button,
+        .edit-button {
+            border: 0;
+            border-radius: 11px;
+            padding: 11px 15px;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            background: linear-gradient(135deg, #7967f5, #4c9de9);
+            cursor: pointer;
+        }
+
+        .search-form button:hover,
+        .edit-button:hover {
+            opacity: .88;
+            transform: translateY(-1px);
+        }
+
+        /* TABLE */
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 720px;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 13px 12px;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 15px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr {
+            transition: background .2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(139,124,255,.06);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .user-name {
+            font-weight: 700;
+        }
+
+        .user-email {
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* STATUS BADGES */
+
+        .status {
+            display: inline-flex;
+            padding: 6px 9px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .status.active {
+            color: var(--green);
+            background: rgba(53,212,154,.12);
+        }
+
+        .status.inactive {
+            color: var(--red);
+            background: rgba(255,113,133,.12);
+        }
+
+        /* VIEW DETAILS BUTTON */
+
+        .edit-button {
+            display: inline-block;
+            padding: 9px 13px;
+            white-space: nowrap;
+            transition: .2s;
+        }
+
+        .empty {
+            padding: 35px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        /* FOOTER */
+
+        .footer {
+            color: var(--muted);
+            text-align: center;
+            font-size: 11px;
+            padding: 25px 0 5px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1100px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                width: 65px;
+                padding: 22px 9px;
+            }
+
+            .brand {
+                justify-content: center;
+                margin: 0 0 35px;
+            }
+
+            .brand-name,
+            .nav-label,
+            .nav-link span {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .main {
+                width: calc(100% - 65px);
+                margin-left: 65px;
+                padding: 22px 15px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .admin-chip {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 9px;
+            }
+
+            .stat-card {
+                padding: 14px;
+                min-height: 125px;
+            }
+
+            .stat-number {
+                font-size: 24px;
+            }
+
+            .panel {
+                padding: 13px;
+            }
+
+            .topbar {
+                margin-bottom: 25px;
+            }
+
+            .search-form {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .search-form button {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <a href="{% url 'admin_dashboard' %}" class="brand">
+            <span class="brand-icon">
+                <i data-lucide="shield-check"></i>
+            </span>
+
+            <span class="brand-name">
+                ClearanceVault
+            </span>
+        </a>
+
+        <div class="nav-label">ADMINISTRATION</div>
+
+        <a href="{% url 'admin_dashboard' %}" class="nav-link active">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Overview</span>
+        </a>
+
+        <a href="#users" class="nav-link">
+            <i data-lucide="users"></i>
+            <span>Users</span>
+        </a>
+
+        <a href="{% url 'admin:auth_user_changelist' %}" class="nav-link">
+            <i data-lucide="user-cog"></i>
+            <span>Manage Accounts</span>
+        </a>
+
+        <div class="nav-label">PLATFORM</div>
+
+        <a href="{% url 'admin:jambapp_document_changelist' %}" class="nav-link">
+            <i data-lucide="file-text"></i>
+            <span>Documents</span>
+        </a>
+
+        <a href="{% url 'admin:jambapp_usersubscription_changelist' %}" class="nav-link">
+            <i data-lucide="crown"></i>
+            <span>Subscriptions</span>
+        </a>
+
+        <a href="{% url 'admin:jambapp_paymenttransaction_changelist' %}" class="nav-link">
+            <i data-lucide="credit-card"></i>
+            <span>Payments</span>
+        </a>
+
+        <a href="{% url 'admin:jambapp_shareddocument_changelist' %}" class="nav-link">
+            <i data-lucide="share-2"></i>
+            <span>Shared Files</span>
+        </a>
+
+        <div class="nav-label">ACCOUNT</div>
+
+        <a href="{% url 'admin:index' %}" class="nav-link">
+            <i data-lucide="settings"></i>
+            <span>Django Admin</span>
+        </a>
+
+        <a href="{% url 'home' %}" class="nav-link">
+            <i data-lucide="external-link"></i>
+            <span>Visit Website</span>
+        </a>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+                <div class="eyebrow">
+                    Platform control center
+                </div>
+
+                <h1>Admin Dashboard</h1>
+
+                <div class="subtitle">
+                    Monitor and manage your ClearanceVault platform.
+                </div>
+            </div>
+
+            <div class="top-actions">
+
+                <button
+                    class="icon-button"
+                    id="themeToggle"
+                    title="Toggle theme"
+                    type="button"
+                >
+                    <i data-lucide="sun-moon"></i>
+                </button>
+
+                <div class="admin-chip">
+                    <i
+                        data-lucide="shield-check"
+                        style="width:14px;vertical-align:middle"
+                    ></i>
+                    Administrator
+                </div>
+
+            </div>
+
+        </header>
+
+        <!-- DJANGO MESSAGES -->
+
+        {% if messages %}
+            <div class="messages-container">
+
+                {% for message in messages %}
+
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+        {% endif %}
+
+        <!-- PLATFORM STATISTICS -->
+
+        <div class="section-heading">
+
+            <h2>Platform Overview</h2>
+
+            <span>Live database totals</span>
+
+        </div>
+
+        <section class="stats">
+
+            <!-- TOTAL USERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    Total Users
+
+                    <span class="stat-icon">
+                        <i data-lucide="users"></i>
+                    </span>
+                </div>
+
+                <div class="stat-number">
+                    {{ total_users }}
+                </div>
+
+                <div class="stat-note">
+                    All registered accounts
+                </div>
+
+            </div>
+
+            <!-- ACTIVE USERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    Active Users
+
+                    <span class="stat-icon">
+                        <i data-lucide="user-check"></i>
+                    </span>
+                </div>
+
+                <div class="stat-number">
+                    {{ active_users }}
+                </div>
+
+                <div class="stat-note">
+                    Accounts currently active
+                </div>
+
+            </div>
+
+            <!-- DOCUMENTS -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    Documents
+
+                    <span class="stat-icon">
+                        <i data-lucide="files"></i>
+                    </span>
+                </div>
+
+                <div class="stat-number">
+                    {{ total_documents }}
+                </div>
+
+                <div class="stat-note">
+                    Uploaded platform documents
+                </div>
+
+            </div>
+
+            <!-- PAID SUBSCRIPTIONS -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    Paid Subscriptions
+
+                    <span class="stat-icon">
+                        <i data-lucide="crown"></i>
+                    </span>
+                </div>
+
+                <div class="stat-number">
+                    {{ paid_subscriptions }}
+                </div>
+
+                <div class="stat-note">
+                    Active Plus and Pro subscriptions
+                </div>
+
+            </div>
+
+            <!-- INACTIVE USERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    Inactive Users
+
+                    <span class="stat-icon">
+                        <i data-lucide="user-x"></i>
+                    </span>
+                </div>
+
+                <div class="stat-number">
+                    {{ inactive_users }}
+                </div>
+
+                <div class="stat-note">
+                    Inactive accounts
+                </div>
+
+            </div>
+
+            <!-- ALL SUBSCRIPTIONS -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    All Subscriptions
+
+                    <span class="stat-icon">
+                        <i data-lucide="layers"></i>
+                    </span>
+                </div>
+
+                <div class="stat-number">
+                    {{ total_subscriptions }}
+                </div>
+
+                <div class="stat-note">
+                    Subscription records
+                </div>
+
+            </div>
+
+            <!-- SUCCESSFUL PAYMENTS -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    Successful Payments
+
+                    <span class="stat-icon">
+                        <i data-lucide="badge-check"></i>
+                    </span>
+                </div>
+
+                <div class="stat-number">
+                    {{ successful_payments }}
+                </div>
+
+                <div class="stat-note">
+                    Verified successful transactions
+                </div>
+
+            </div>
+
+            <!-- PENDING PAYMENTS -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    Pending Payments
+
+                    <span class="stat-icon">
+                        <i data-lucide="clock"></i>
+                    </span>
+                </div>
+
+                <div class="stat-number">
+                    {{ pending_payments }}
+                </div>
+
+                <div class="stat-note">
+                    Awaiting payment confirmation
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- USER MANAGEMENT -->
+
+        <section id="users">
+
+            <div class="section-heading">
+
+                <h2>User Management</h2>
+
+                <span>
+                    {{ total_users }} registered accounts
+                </span>
+
+            </div>
+
+            <div class="panel">
+
+                <!-- SEARCH TOOLBAR -->
+
+                <div class="user-toolbar">
+
+                    <div>
+                        <strong>Registered Users</strong>
+
+                        <div class="subtitle" style="margin-top:5px">
+                            Search accounts and manage student details.
+                        </div>
+                    </div>
+
+                    <form method="GET" class="search-form">
+
+                        <input
+                            type="search"
+                            name="q"
+                            placeholder="Search name, email or username..."
+                            value="{{ search_query }}"
+                        >
+
+                        <button type="submit">
+                            Search
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <!-- USERS TABLE -->
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>User</th>
+                                <th>Username</th>
+                                <th>Date Joined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for account in users %}
+
+                            <tr>
+
+                                <!-- USER -->
+
+                                <td>
+
+                                    <div class="user-name">
+                                        {{ account.get_full_name|default:account.username }}
+                                    </div>
+
+                                    <div class="user-email">
+                                        {{ account.email }}
+                                    </div>
+
+                                </td>
+
+                                <!-- USERNAME -->
+
+                                <td>
+                                    {{ account.username }}
+                                </td>
+
+                                <!-- DATE JOINED -->
+
+                                <td>
+                                    {{ account.date_joined|date:"M d, Y" }}
+                                </td>
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    {% if account.is_active %}
+
+                                        <span class="status active">
+                                            ACTIVE
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="status inactive">
+                                            INACTIVE
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <!-- ACTIONS -->
+
+                                <td>
+
+                                    <a
+                                        class="edit-button"
+                                        href="{% url 'admin_user_detail' account.id %}"
+                                    >
+                                        View Details
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td colspan="5" class="empty">
+                                    No users found.
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% if users|length == 100 %}
+
+                    <p class="subtitle" style="margin-top:15px">
+
+                        Showing the first 100 matching accounts.
+                        Use search to find a particular user.
+
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+            ClearanceVault Admin · Secure platform management
+        </div>
+
+    </main>
+
+</div>
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+
+    // Theme controls
+    const themeButton = document.getElementById("themeToggle");
+
+
+    // Load saved theme
+    if (localStorage.getItem("cv-admin-theme") === "light") {
+
+        document.body.classList.add("light");
+
+    }
+
+
+    // Toggle theme
+    themeButton.addEventListener("click", function () {
+
+        document.body.classList.toggle("light");
+
+        const currentTheme =
+            document.body.classList.contains("light")
+                ? "light"
+                : "dark";
+
+        localStorage.setItem(
+            "cv-admin-theme",
+            currentTheme
+        );
+
+    });
+
+</script>
+
+</body>
+</html>
